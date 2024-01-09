@@ -1,0 +1,24 @@
+import ifcopenshell
+from openpyxl import Workbook
+
+# Öffnen der IFC-Datei
+ifc_file = ifcopenshell.open("IFC EFH Borova STUD.ifc")
+
+# Erstellen einer Excel-Datei und eines Arbeitsblatts
+workbook = Workbook()
+worksheet = workbook.active
+
+# Schreiben von Überschriften in die Excel-Tabelle
+worksheet.append(["Raum", "Bodenfläche (m²)"])
+
+# Durchlaufen der IFC-Elemente und Extrahieren der Informationen
+for space in ifc_file.by_type("IfcSpace"):
+    # Hier liest du den Wert "NetFloorArea" aus dem IFC-Element
+    net_floor_area = space.NetFloorArea if hasattr(space, "NetFloorArea") else 0.0
+    
+    raum_name = space.Name if space.Name else "Unbenannter Raum"
+    
+    worksheet.append([raum_name, net_floor_area])
+
+# Speichern der Excel-Datei
+workbook.save("bodenflaechen.xlsx")
